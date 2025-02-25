@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Integration Quality Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Data Integration Quality Dashboard</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Transaction Status</div>
+                    <div class="card-body">
+                        <table class="table table-striped" id="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function fetchTransactions() {
+            const transactions = {
+                input_data: {
+                    fields: ["feature1", "feature2"],
+                    values: [[1, 8], [2, 9], [3, 10]]
+                }
+            };
+            
+            const response = await axios.post('http://localhost:3000/predict', { transactions });
+            const predictions = response.data.predictions;
+
+            const tableBody = document.querySelector('#transactions-table tbody');
+            tableBody.innerHTML = '';
+            transactions.input_data.values.forEach((transaction, index) => {
+                const status = predictions[index].status;
+                const row = `<tr><td>${index + 1}</td><td>${status}</td></tr>`;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        }
+
+        fetchTransactions();
+    </script>
+</body>
+</html>
